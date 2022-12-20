@@ -1,0 +1,55 @@
+import telebot
+import random
+
+from env import TOKEN
+
+
+
+bot = telebot.TeleBot(TOKEN)
+
+keyboard = telebot.types.ReplyKeyboardMarkup()
+button2 = telebot.types.KeyboardButton('Да')
+button1 = telebot.types.KeyboardButton('Нет')
+keyboard.add(button1, button2)
+
+
+@bot.message_handler(commands=['start', 'hi'])
+def start_function(message):
+    bot.send_message(message.chat.id,f'Привет{message.chat.first_name} начнем игру?',reply_markup=keyboard)
+    bot.register_next_step_handler(message,answer_chek)
+#     bot.send_sticker(message.chat.id,'CAACAgIAAxkBAAJKeWOhPfmUUej6BwTItmVsE-X7nqydAAIQAAOc_jIwjMkV0F0CcZwsBA')
+#     bot.send_photo(message.chat.id, 'data:image/png;base64,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)')
+
+def answer_chek(msg):
+    if msg.text == 'Да':
+         bot.send_message(msg.chat.id,'у тебя естьо 3 попытки угадать чистло от 1 до 10')
+         random_number = random.randint(1,10)
+         p = 3
+         start_game(msg,random_number,p)
+
+    else:
+        bot.send_message(msg.chat.id,' Ну и ладно!')
+
+def start_game(msg, random_number,p):
+    msg = bot.send_message(msg.chat.id,'ВВеди число лт 1 до 10')
+    bot.register_next_step_handler(msg, chek_func, random_number, p-1)
+
+
+
+def chek_func(msg, random_number,p):
+    if msg.text == str(random_number):
+        bot.send_message(msg.chat.id, 'Вы победили!')
+    elif p == 0:
+        bot.send_message(msg.chat.id, f'Вы проиграли ! Было число')
+        print(msg.text)
+    else:
+        bot.send_message(msg.chat.id,f'попробуй ееще раз, у тебя осталось{p} попыток')
+        start_game(msg,random_number,p)
+
+
+bot.polling()
+
+# @bot.message_handler()
+# def echo_all(message):
+#     bot.send_message(message.chatid, message.text)
+ 
